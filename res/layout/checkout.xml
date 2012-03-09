@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:orientation="horizontal" android:weightSum="1">
+    <ToggleButton android:layout_height="wrap_content" android:id="@+id/ToggleButton1" android:text="czy kasa wlaczona" android:layout_width="wrap_content"></ToggleButton>
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="0.2" android:text="TextView" android:id="@+id/kasa"></TextView>
+    <CheckBox android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="0.2" android:text="@string/card" android:id="@+id/czykarta"></CheckBox>
+    <RadioGroup android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:id="@+id/QueGroup1" android:layout_width="wrap_content" android:layout_weight="0.36">
+        <RadioButton android:id="@+id/male" android:text="@string/buyS" android:layout_width="36dp" android:layout_height="wrap_content"></RadioButton>
+    <RadioButton android:layout_height="wrap_content" android:text="@string/buyM" android:layout_width="36dp" android:id="@+id/srednie"></RadioButton>
+    <RadioButton android:layout_height="wrap_content" android:text="@string/buyL" android:layout_width="36dp" android:id="@+id/duze"></RadioButton>
+    </RadioGroup>
+    <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="@string/addToBase" android:id="@+id/dodaj"></Button>
+</LinearLayout>

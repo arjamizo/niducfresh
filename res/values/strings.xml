@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, NiducActivity!</string>
-    <string name="app_name">Niduc</string>
-    <string name="title">Niduc Tesco Data Collector</string>
-    <string name="buyS"></string>
-    <string name="buyM"></string>
-    <string name="buyL"></string>
-    <string name="card"></string>
-    <string name="addToBase">OK</string>
+    <string name="hello">Hello World!</string>
+    <string name="app_name">Niducproject</string>
 </resources>

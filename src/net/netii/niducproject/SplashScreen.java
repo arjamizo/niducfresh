@@ -1,22 +1,8 @@
 package net.netii.niducproject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.R.layout;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 public class SplashScreen extends Activity {
 //http://www.droidnova.com/how-to-create-a-splash-screen,561.html

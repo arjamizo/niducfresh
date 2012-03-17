@@ -9,14 +9,15 @@ public class ThreadEntryRefresher implements Runnable {
 	}
 	@Override
 	public void run() {
-		while (true) {
+		//while(true)
+		{
 			activity.updateRows();
-			try {
+			/*try {
 				Thread.sleep(333);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 		}
 	}
 

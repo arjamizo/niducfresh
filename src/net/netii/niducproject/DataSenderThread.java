@@ -3,6 +3,7 @@ package net.netii.niducproject;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -16,19 +17,17 @@ public class DataSenderThread extends Thread implements Runnable {
 	private HttpClient httpclient;
 	private HttpPost httppost;
 	private List<NameValuePair> nameValuePairs;
+	private final String[] keys;
+	private final String[] data;     
+	public boolean sent=false;
+	public boolean finished=true;
+	private final DBHelper db;
 	
-	private final String cashdeskId;
-	private final String cardPaid;
-	private final String size;
-	private final String date;
-	private final String time;	
 	
-	public DataSenderThread(String cashdeskId, String cardPaid, String size, String date, String time){
-		this.cashdeskId = cashdeskId;
-		this.cardPaid = cardPaid;
-		this.size = size;
-		this.date = date;
-		this.time = time;
+	public DataSenderThread(String []keys, String []data, DBHelper db){
+		this.keys = keys;
+		this.data = data;
+		this.db = db;
 		start();
 	}
 	
@@ -36,20 +35,38 @@ public class DataSenderThread extends Thread implements Runnable {
 	public void run() {		
         httpclient = new DefaultHttpClient();
     	
-        httppost = new HttpPost("http://niducproject.netii.net/index.php");
-            
+        
+        httppost = new HttpPost("http://arzoxadi.tk/niduc/bazadanych.php");
+        //wymagane w AndroindManifest.xml <uses-permission android:name="android.permission.INTERNET"></uses-permission> 
+
         nameValuePairs = new ArrayList<NameValuePair>(2);
-        nameValuePairs.add(new BasicNameValuePair("cashdesk_id", cashdeskId));
-        nameValuePairs.add(new BasicNameValuePair("card_paid", cardPaid));
-        nameValuePairs.add(new BasicNameValuePair("shopping_size", size));
-        nameValuePairs.add(new BasicNameValuePair("shopping_date", date));
-        nameValuePairs.add(new BasicNameValuePair("shopping_time", time));
+        
+       // String string="";
+        for(int i=0; i<data.length; i++)
+        {
+        	//string+=keys[i];
+        	//string+="=";
+        	//string+=data[i];
+        	//string+=";";
+        	nameValuePairs.add(new BasicNameValuePair(keys[i],data[i]));
+        }
+        //Log.i("http", string);
         
 		try {
 			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			httpclient.execute(httppost);					
+			//Log.i("http", httppost.)
+			HttpResponse execute = httpclient.execute(httppost);
+			Log.i("http",execute.getEntity().getContent().toString());
+			if(execute.getStatusLine().getStatusCode()==200)
+			{
+				Log.i("http", "wyslano pomyslnie ".concat(httppost.toString()));
+			}
+			else 
+			{
+				Log.i("http", "blad przy wysylaniu");
+			}
 		}catch(Exception e){
-        	Log.i("sql", e.getMessage());		        
+        	Log.i("http", e.getMessage());
 		}
 	}
 

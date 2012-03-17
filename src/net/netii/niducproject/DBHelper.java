@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
-	public static final String DATABASE_NAME = "niduc_project_01.db";
-	public static final int DATABASE_VERSION = 1;
+	public static final String DATABASE_NAME = "niducfresh.db";
+	public static final int DATABASE_VERSION = 2;
 	
 	public static final String NIDUC_TABLE = "niduc_project";
 	public static final String CASHDESK_ID = "cashdesk_id";
@@ -25,15 +25,16 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase base) {
 		try {
 			Log.i("sql", "not-created");
-			base.execSQL("CREATE TABLE " + NIDUC_TABLE + "("
-						+ CASHDESK_ID + " int(2), "
-						+ CARD_PAID + " int(1), "
-						+ SIZE + " int(1), "
-						+ DATE + " datetime, "
-						+ TIME + " int(2), "
-					    + " PRIMARY KEY (" 
-					    + CASHDESK_ID + "," +  CARD_PAID + ","
-					    + SIZE + "," + DATE + "," + TIME + "));");
+			base.execSQL("CREATE TABLE `niducstorage` ("+
+					  "`id` int(11) NOT NULL AUTO_INCREMENT,"+
+					  "`start_time` datetime NOT NULL,"+
+					  "`cashorcard` tinyint(1) NOT NULL,"+
+					  "`queuelen` int(11) NOT NULL,"+
+					  "`taken_time` int(11) NOT NULL,"+
+					  "`cash_no` smallint(6) NOT NULL,"+
+					  "`user_login` varchar(30) NOT NULL,"+
+					  "PRIMARY KEY (`id`)"+
+					") ENGINE=MyISAM DEFAULT CHARSET=latin2 AUTO_INCREMENT=1 ;");
 			Log.i("sql", "created");
 		} catch (SQLiteException ex) {
 			Log.i("sql", ex.getMessage());
@@ -46,10 +47,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	}	
 	
 	
-	public String insertData(String cashdeskId, String cardPaid, String size, String date, String time){
-		String query = "INSERT INTO " + NIDUC_TABLE
-					+ " VALUES(" + cashdeskId + "," + cardPaid + "," + size
-				          + ",'" + date + "'," + time + ");";
+	public String insertData(String start_time, String cashorcard, String queuelen, String taken_time, String cash_no, String user_login){
+		
+		String query = String.format("INSERT INTO `%s` " +
+				"(start_time, cashorcard, queuelen, taken_time, cash_no, user_login) " +
+				"VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", 
+				start_time, cashorcard, queuelen, taken_time, cash_no, user_login);
 				
 		try{
 			SQLiteDatabase base = getWritableDatabase();			
@@ -59,7 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			return "Database error";
 		}           
             
-		new DataSenderThread(cashdeskId, cardPaid, size, date, time);
+		//new DataSenderThread(cashdeskId, cardPaid, size, date, time);
 		return query;
 	}
 }

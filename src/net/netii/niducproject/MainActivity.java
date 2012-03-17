@@ -3,6 +3,7 @@ package net.netii.niducproject;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -94,7 +95,8 @@ public class MainActivity extends Activity {
 		switch(item.getItemId())
 		{
 		case R.id.about:
-			//new activity, credits etc. 
+            Intent intent = new Intent(this,AboutActivity.class);
+			startActivity(intent);
 			break;
 		case R.id.send:
 			sendDataFromDBToServer();

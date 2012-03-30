@@ -12,8 +12,8 @@ public class ListenerFinishButton implements OnClickListener {
 	Context context; 
 	DBHelper db;
 	RowEntry row;
-	private final MainActivity act;
-	public ListenerFinishButton(Context context, DBHelper db, RowEntry row, MainActivity act) {
+	private final Context act;
+	public ListenerFinishButton(Context context, DBHelper db, RowEntry row, Context act) {
 		super();
 		this.context = context;
 		this.db = db;
@@ -66,7 +66,7 @@ public class ListenerFinishButton implements OnClickListener {
 			row.setTime(-1);
 		}
 		row.updateLabel();
-		act.updateRows();
+		((MainActivity)act).updateRows();
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.R.string;
 import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -25,11 +26,11 @@ public class RowEntry extends LinearLayout {
 	private Button queueLen;
 	public Button finish;
 	private MainActivity act;
-	static int counter=0;
 	private RadioButton shpSizeS;
 	private RadioButton shpSizeM;
 	private RadioButton shpSizeL;
 	public ListenerQueueLength listenerQueueLength;
+	private final Context context;
 
 	public String[] getArrayOfData() {
 		Calendar c = Calendar.getInstance();
@@ -40,6 +41,10 @@ public class RowEntry extends LinearLayout {
 				+ ":" + c.get(Calendar.MINUTE)
 				+ ":" + c.get(Calendar.SECOND);
 		// List<String> data=new ArrayList<String>();
+		
+		WifiManager wimanager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+		String address= wimanager.getConnectionInfo().getMacAddress();
+		
 		String strs[] = {
 				//Integer.toString((Integer) finish.getTag())
 
@@ -50,7 +55,7 @@ public class RowEntry extends LinearLayout {
 				,queueLen.getText().toString()
 				,Integer.toString((int) (Calendar.getInstance().getTime()
 						.getTime() / 1000 - (Integer) finish.getTag()))
-				,android.os.Build.MODEL };
+				,android.os.Build.MODEL+"_mac:"+address };
 		/*
 		 * for(String str : strs) data.add(str);
 		 */
@@ -71,31 +76,24 @@ public class RowEntry extends LinearLayout {
 		return finish;
 
 	}
-
-	public RowEntry(Context context, DBHelper db, MainActivity act) {
-		super(context);
-
-		this.act=act;
-		setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.FILL_PARENT, 1.0f));
-		setGravity(Gravity.CENTER | Gravity.LEFT);
-		setPadding(0, 15, 0, 15);
-
-		tglbtn = new ToggleButton(context);
-		counter+=1;
-		String string=Integer.toString(counter);
-		tglbtn.setText(string);
-		tglbtn.setTextOff(string);
-		tglbtn.setTextOn(string);
-		addView(tglbtn);
-
+	
+	private LinearLayout getOnLayout(int id, Context context, DBHelper db)
+	{
+		ArrayList<View> elements=new ArrayList<View>();
+		LinearLayout linearLayout = new LinearLayout(context);
+		linearLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT, 1.0f));
+		
+		linearLayout.setGravity(Gravity.CENTER | Gravity.LEFT);
+		linearLayout.setPadding(0, 15, 0, 15);
 		card = new CheckBox(context);
-		addView(card);
+		elements.add(card);
 
 		shoppingSize = new Button(context);
 		shoppingSize.setText("M");
-		shoppingSize.setWidth(80);
-		addView(shoppingSize);
+		//shoppingSize.setWidth(80);
+		//linearLayout.addView(shoppingSize);
+		elements.add(shoppingSize);
 		shoppingSize.setOnClickListener(new ListenerShoppingSize(getContext(),
 				shoppingSize));
 
@@ -108,19 +106,48 @@ public class RowEntry extends LinearLayout {
 
 		queueLen = new Button(context);
 		queueLen.setText("4");
-		queueLen.setWidth(80);
-		addView(queueLen);
+		//queueLen.setWidth(80);
+		elements.add(queueLen);
+		//linearLayout.addView(queueLen);
 		listenerQueueLength = new ListenerQueueLength(
 				getContext(), queueLen);
 		queueLen.setOnClickListener(listenerQueueLength);
 		queueLen.setOnLongClickListener(listenerQueueLength);
 
 		finish = new Button(context);
-		finish.setWidth(100);
+		//finish.setWidth(100);
 		finish.setText("00:13");
-		addView(finish);
-		finish.setOnClickListener(new ListenerFinishButton(getContext(), db,
-				this,act));
+		//linearLayout.addView(finish);
+		elements.add(finish);
+		finish.setOnClickListener(new ListenerFinishButton(context, db,
+				this,context));
+		for(View view:elements)
+		{
+			if(view instanceof CheckBox==false)view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
+			linearLayout.addView(view);
+		}
+		return linearLayout;
+	}
+
+	public RowEntry(Context context, DBHelper db, MainActivity act, int counter) {
+		super(context);
+		this.context = context;
+
+		setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.FILL_PARENT, 1.0f));
+		setGravity(Gravity.CENTER | Gravity.LEFT);
+		this.act=act;
+
+		tglbtn = new ToggleButton(context);
+		String string=Integer.toString(counter);
+		tglbtn.setText(string);
+		tglbtn.setTextOff(string);
+		tglbtn.setTextOn(string);
+		addView(tglbtn);
+		
+		addView(getOnLayout(counter, act, db));
+
+		
 	}
 
 	public void reset() {
@@ -147,5 +174,7 @@ public class RowEntry extends LinearLayout {
 			finish.setText(stringBuilder.toString());
 		}
 	}
+	
+	
 
 }

@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
 		}).start();
 
 		for (int i = 0; i < 12; i++) {
-			RowEntry row = new RowEntry(this, dbHelp, this);
+			RowEntry row = new RowEntry(this, dbHelp, this, i);
 			rows.add(row);
 			insideScroll.addView(row);
 		}

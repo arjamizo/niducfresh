@@ -10,23 +10,21 @@ import android.widget.Button;
 public class ListenerQueueLength implements OnClickListener, OnLongClickListener {
 
 	Context context;
-	Button queleLenBtn;
-	Integer queueLen;
+	RowEntry rowEntry;
 
-	public ListenerQueueLength(Context context, Button queleLenBtn, Integer queueLen) {
+	public ListenerQueueLength(Context context, RowEntry rowEntry) {
 		super();
 		this.context = context;
-		this.queleLenBtn = queleLenBtn;
-		this.queueLen = queueLen;
+		this.rowEntry = rowEntry;
 		setLabel();
 	}
 
 	private void setLabel() {
-		queleLenBtn.setText(Integer.toString(getNumber()));
+		rowEntry.queueLenBtn.setText(Integer.toString(getNumber()));
 	}
 
 	public void increment() {
-		queueLen=getNumber()+1;
+		rowEntry.queueLen=getNumber()+1;
 		setLabel();
 	}
 
@@ -37,13 +35,13 @@ public class ListenerQueueLength implements OnClickListener, OnLongClickListener
 	}
 
 	public void decrease() {
-		queueLen=new Integer(getNumber())-getNumber()>0?1:0;
+		rowEntry.queueLen=getNumber()-((getNumber()>0)?1:0);
 		setLabel();
 		
 	}
 
 	public Integer getNumber() {
-		return queueLen;
+		return rowEntry.queueLen;
 	}
 
 	@Override

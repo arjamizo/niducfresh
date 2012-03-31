@@ -6,9 +6,10 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Toast;
 
-public class ListenerFinishButton implements OnClickListener {
+public class ListenerFinishButton implements OnClickListener, OnLongClickListener {
 	Context context; 
 	DBHelper db;
 	RowEntry row;
@@ -43,8 +44,12 @@ public class ListenerFinishButton implements OnClickListener {
 		}
 		if(row.getTime()==-1)
 		{
-			Toast.makeText(context, "ustawianie nowego czsau", Toast.LENGTH_LONG).show();
+			//Toast.makeText(context, "ustawianie nowego czsau", Toast.LENGTH_LONG).show();
 			row.setTime((int) (Calendar.getInstance().getTime().getTime()/1000));		
+		}
+		else if (row.getTime()<0)
+		{
+			row.setTime(row.getTime()+1);
 		}
 		else
 		{
@@ -70,6 +75,17 @@ public class ListenerFinishButton implements OnClickListener {
 		}
 		row.updateLabel();
 		((MainActivity)act).updateRows();
+	}
+
+
+	@Override
+	public boolean onLongClick(View v) {
+		row.reset();
+		row.setTime(-2);
+		row.queueLen=0;
+		row.queueLenBtn.setText("0");
+		row.updateLabel();
+		return true;
 	}
 
 }

@@ -3,4 +3,5 @@
     <string name="hello">Hello World!</string>
     <string name="app_name">Niducproject</string>
     <string name="createDb">CREATE TABLE `storage` (`start_time` datetime, `cashorcard` tinyint(1), `queuelen` int(11), `shoppingsize` int(11),`taken_time` int(11), `cash_no` smallint(6), `user_login` varchar(30), PRIMARY KEY(start_time, cashorcard, queuelen, taken_time, cash_no, user_login));</string>
+    <string name="header">Wcisnij przycisk menu po wiecej</string>
 </resources>

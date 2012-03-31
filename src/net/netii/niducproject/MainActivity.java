@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 				LinearLayout.LayoutParams.FILL_PARENT, 0f));
 
 		TextView label = new TextView(this);
-		label.setText("proram");
+		label.setText(getResources().getString(R.string.header));
 		wrapper.addView(label);
 
 		ScrollView scrollView = new ScrollView(this);

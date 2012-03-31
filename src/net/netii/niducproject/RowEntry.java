@@ -5,10 +5,13 @@ import java.util.Calendar;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
+import android.text.InputType;
+import android.text.Layout;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -31,6 +34,11 @@ public class RowEntry extends LinearLayout {
 	public Button finishBtn;
 	public ToggleButton tglbtn;
 	LinearLayout checkoutClerkLayout;
+	LinearLayout configLayout;
+	EditText number;
+	Button queueLenBtn;
+	CheckBox cardBtn;
+	int counter;
 
 	public String[] getArrayOfData() {
 		Calendar c = Calendar.getInstance();
@@ -45,13 +53,19 @@ public class RowEntry extends LinearLayout {
 		WifiManager wimanager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
 		String address= wimanager.getConnectionInfo().getMacAddress();
 		
+		int shoppingSizeFromRadios=
+				(shpSizeS.isChecked()?1:0)
+						+(shpSizeM.isChecked()?2:0)
+								+(shpSizeL.isChecked()?3:0);
+						
+		
 		String strs[] = {
 				//Integer.toString((Integer) finish.getTag())
 
 				sDate
 				,Integer.toString((Integer)id)
 				,card?"1":"0"
-				,Integer.toString((Integer)shoppingSize)
+				,Integer.toString((Integer)shoppingSizeFromRadios)
 				,Integer.toString(queueLen)
 				,Integer.toString((int) (Calendar.getInstance().getTime().getTime() / 1000 - finish))
 				,android.os.Build.MODEL+"_mac:"+address };
@@ -79,13 +93,13 @@ public class RowEntry extends LinearLayout {
 	{
 
 		ArrayList<View> elements=new ArrayList<View>();
-		LinearLayout linearLayout = new LinearLayout(context);
-		linearLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
+		LinearLayout layout = new LinearLayout(context);
+		layout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT, 1.0f));
 		
-		linearLayout.setGravity(Gravity.CENTER | Gravity.LEFT);
-		linearLayout.setPadding(0, 4, 0, 4);
-		CheckBox cardBtn = new CheckBox(context);
+		layout.setGravity(Gravity.CENTER | Gravity.LEFT);
+		layout.setPadding(0, 4, 0, 4);
+		cardBtn = new CheckBox(context);
 		cardBtn.setOnCheckedChangeListener(new ListenerIfCard(context, this));
 		elements.add(cardBtn);
 
@@ -95,6 +109,7 @@ public class RowEntry extends LinearLayout {
 				shoppingSizeBtn, shoppingSize));
 
 		RadioGroup radioGroup = new RadioGroup(context);
+		radioGroup.setOrientation(RadioGroup.HORIZONTAL);
 		shpSizeS = new RadioButton(context);
 		radioGroup.addView(shpSizeS);
 		shpSizeM = new RadioButton(context);
@@ -102,14 +117,14 @@ public class RowEntry extends LinearLayout {
 		shpSizeL = new RadioButton(context);
 		radioGroup.addView(shpSizeL);
 		
-		addView(radioGroup);
+		layout.addView(radioGroup);
 
 		
-		Button queueLenBtn = new Button(context);
+		queueLenBtn = new Button(context);
 		//queueLen.setWidth(80);
 		elements.add(queueLenBtn);
 		listenerQueueLength = new ListenerQueueLength(
-				getContext(), queueLenBtn, queueLen);
+				getContext(), this);
 		queueLenBtn.setOnClickListener(listenerQueueLength);
 		queueLenBtn.setOnLongClickListener(listenerQueueLength);
 
@@ -118,32 +133,43 @@ public class RowEntry extends LinearLayout {
 		finishBtn.setText("00:13");
 		//linearLayout.addView(finish);
 		elements.add(finishBtn);
-		finishBtn.setOnClickListener(new ListenerFinishButton(context, db,
-				this,context, finish));
+		ListenerFinishButton listenerFinishButton = new ListenerFinishButton(context, db,
+				this,context, finish);
+		finishBtn.setOnClickListener(listenerFinishButton);
+		finishBtn.setOnLongClickListener(listenerFinishButton);
 		
 		for(View view:elements)
 		{
-			if(view instanceof CheckBox==false)view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
-			linearLayout.addView(view);
+			if(view instanceof CheckBox==false)view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			layout.addView(view);
 		}
-		linearLayout.setVisibility(turnedOn?LinearLayout.VISIBLE:LinearLayout.INVISIBLE);
-		return linearLayout;
+		queueLenBtn.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		finishBtn.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f));
+		layout.setVisibility(turnedOn?LinearLayout.VISIBLE:LinearLayout.INVISIBLE);
+		return layout;
 	}
 
-	public void init() {
-		queueLen=0;
+	public void init(Integer counter, boolean beginning) {
+		//queueLen=0;
+		if(beginning)
+			queueLen=0;
+		//else 
+		//	queueLen-=queueLen>0?1:0;
 		shoppingSize=0;
 		finish=0;
-		turnedOn=false;
-		id=0;
+		turnedOn=!beginning;
+		id=counter;
 		card=false;
+
 	}
 
 	public RowEntry(Context context, DBHelper db, MainActivity act, int counter) {
 		super(context);
 		this.context = context;
+		this.counter = counter;
 
-		init();
+		//queueLen=1; //init will decrease it
+		init(counter,true);
 		setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT, 1.0f));
 		setGravity(Gravity.CENTER | Gravity.LEFT);
@@ -163,19 +189,39 @@ public class RowEntry extends LinearLayout {
 		
 		checkoutClerkLayout = getOnLayout(counter, act, db);
 		addView(checkoutClerkLayout);
+		
+		configLayout = getOffLayout(counter, act);
+		addView(configLayout);
 
 
 		listenerToggleButton.toggleTo(false);
 	}
 
+	private LinearLayout getOffLayout(int counter, MainActivity act) {
+		LinearLayout linearLayout = new LinearLayout(act);
+		number = new EditText(act);
+		number.setInputType(InputType.TYPE_CLASS_NUMBER);
+		number.setText(Integer.toString(counter));
+		linearLayout.addView(number);
+		return linearLayout;
+	}
+
 	public void reset() {
-		// TODO Auto-generated method stub
+		init(counter,false);
+
+		shpSizeL.setChecked(false);
+		shpSizeM.setChecked(false);
+		shpSizeS.setChecked(false);
+		cardBtn.setChecked(false);
+		//queueLenBtn.setText(Integer.toString(queueLen));
 
 	}
 
 	public void updateLabel() {
 		if (getTime() == -1) {
 			finishBtn.setText("start");
+		}else if (getTime() < 0) {
+				finishBtn.setText("cancelled");
 		} else {
 			int newtime = (int) (Calendar.getInstance().getTime().getTime() / 1000)
 					- getTime();

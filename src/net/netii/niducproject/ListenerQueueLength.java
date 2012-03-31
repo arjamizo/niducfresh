@@ -11,12 +11,13 @@ public class ListenerQueueLength implements OnClickListener, OnLongClickListener
 
 	Context context;
 	Button queleLenBtn;
+	Integer queueLen;
 
-	public ListenerQueueLength(Context context, Button queleLenBtn) {
+	public ListenerQueueLength(Context context, Button queleLenBtn, Integer queueLen) {
 		super();
 		this.context = context;
 		this.queleLenBtn = queleLenBtn;
-		queleLenBtn.setTag(new Integer(0));
+		this.queueLen = queueLen;
 		setLabel();
 	}
 
@@ -25,8 +26,7 @@ public class ListenerQueueLength implements OnClickListener, OnLongClickListener
 	}
 
 	public void increment() {
-		Integer next=getNumber()+1;
-		queleLenBtn.setTag(next);
+		queueLen=getNumber()+1;
 		setLabel();
 	}
 
@@ -37,16 +37,13 @@ public class ListenerQueueLength implements OnClickListener, OnLongClickListener
 	}
 
 	public void decrease() {
-		Integer number=getNumber();
-		if(number>0)
-			number+=-1;
-		queleLenBtn.setTag(number);
+		queueLen=new Integer(getNumber())-getNumber()>0?1:0;
 		setLabel();
 		
 	}
 
 	public Integer getNumber() {
-		return (Integer) queleLenBtn.getTag();
+		return queueLen;
 	}
 
 	@Override

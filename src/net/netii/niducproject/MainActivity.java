@@ -72,11 +72,16 @@ public class MainActivity extends Activity {
 			}
 		}).start();
 
-		for (int i = 0; i < 12; i++) {
-			RowEntry row = new RowEntry(this, dbHelp, this, i);
-			rows.add(row);
-			insideScroll.addView(row);
-		}
+
+		if(rows.isEmpty())
+			for (int i = 0; i < 12; i++) {
+				RowEntry row = new RowEntry(this, dbHelp, this, i);
+				rows.add(row);
+				insideScroll.addView(row);
+			}
+		else
+			for(RowEntry row:rows)
+				insideScroll.addView(row);
 
 		
 		wrapper.addView(scrollView);

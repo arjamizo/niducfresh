@@ -1,12 +1,8 @@
 package net.netii.niducproject;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
-import android.R.string;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.view.Gravity;
@@ -15,22 +11,26 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.TextView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class RowEntry extends LinearLayout {
-	public ToggleButton tglbtn;
-	private CheckBox card;
-	private Button shoppingSize;
-	private Button queueLen;
-	public Button finish;
+	Integer id;
+	boolean turnedOn;
+	boolean card;
+	Integer shoppingSize;
+	Integer queueLen;
+	Integer finish;
 	private MainActivity act;
 	private RadioButton shpSizeS;
 	private RadioButton shpSizeM;
 	private RadioButton shpSizeL;
 	public ListenerQueueLength listenerQueueLength;
-	private final Context context;
+	private Context context;
+	public Button finishBtn;
+	public ToggleButton tglbtn;
+	LinearLayout checkoutClerkLayout;
 
 	public String[] getArrayOfData() {
 		Calendar c = Calendar.getInstance();
@@ -49,12 +49,11 @@ public class RowEntry extends LinearLayout {
 				//Integer.toString((Integer) finish.getTag())
 
 				sDate
-				,tglbtn.getText().toString()
-				,card.isChecked() ? "1" : "0"
-				,Integer.toString((Integer)shoppingSize.getTag())
-				,queueLen.getText().toString()
-				,Integer.toString((int) (Calendar.getInstance().getTime()
-						.getTime() / 1000 - (Integer) finish.getTag()))
+				,Integer.toString((Integer)id)
+				,card?"1":"0"
+				,Integer.toString((Integer)shoppingSize)
+				,Integer.toString(queueLen)
+				,Integer.toString((int) (Calendar.getInstance().getTime().getTime() / 1000 - finish))
 				,android.os.Build.MODEL+"_mac:"+address };
 		/*
 		 * for(String str : strs) data.add(str);
@@ -66,73 +65,85 @@ public class RowEntry extends LinearLayout {
 		return new String[] { "start_time", "cash_no", "card",
 				"shoppingsize", "queuelen", "taken_time", "user_login" };
 	}
-
 	public Integer getTime() {
-		return (Integer) finish.getTag();
+		return finish;
 	}
 
-	public Button setTime(Integer time) {
-		finish.setTag(time);
+	public int setTime(Integer time) {
+		finish=time;
 		return finish;
 
 	}
 	
 	private LinearLayout getOnLayout(int id, Context context, DBHelper db)
 	{
+
 		ArrayList<View> elements=new ArrayList<View>();
 		LinearLayout linearLayout = new LinearLayout(context);
 		linearLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
 				LayoutParams.WRAP_CONTENT, 1.0f));
 		
 		linearLayout.setGravity(Gravity.CENTER | Gravity.LEFT);
-		linearLayout.setPadding(0, 15, 0, 15);
-		card = new CheckBox(context);
-		elements.add(card);
+		linearLayout.setPadding(0, 4, 0, 4);
+		CheckBox cardBtn = new CheckBox(context);
+		cardBtn.setOnCheckedChangeListener(new ListenerIfCard(context, this));
+		elements.add(cardBtn);
 
-		shoppingSize = new Button(context);
-		shoppingSize.setText("M");
-		//shoppingSize.setWidth(80);
-		//linearLayout.addView(shoppingSize);
-		elements.add(shoppingSize);
-		shoppingSize.setOnClickListener(new ListenerShoppingSize(getContext(),
-				shoppingSize));
+		Button shoppingSizeBtn = new Button(context);
+		//elements.add(shoppingSizeBtn);
+		shoppingSizeBtn.setOnClickListener(new ListenerShoppingSize(getContext(),
+				shoppingSizeBtn, shoppingSize));
 
-		/*shpSizeS = new RadioButton(context);
-		addView(shpSizeS);
+		RadioGroup radioGroup = new RadioGroup(context);
+		shpSizeS = new RadioButton(context);
+		radioGroup.addView(shpSizeS);
 		shpSizeM = new RadioButton(context);
-		addView(shpSizeM);
+		radioGroup.addView(shpSizeM);
 		shpSizeL = new RadioButton(context);
-		addView(shpSizeL);*/
+		radioGroup.addView(shpSizeL);
+		
+		addView(radioGroup);
 
-		queueLen = new Button(context);
-		queueLen.setText("4");
+		
+		Button queueLenBtn = new Button(context);
 		//queueLen.setWidth(80);
-		elements.add(queueLen);
-		//linearLayout.addView(queueLen);
+		elements.add(queueLenBtn);
 		listenerQueueLength = new ListenerQueueLength(
-				getContext(), queueLen);
-		queueLen.setOnClickListener(listenerQueueLength);
-		queueLen.setOnLongClickListener(listenerQueueLength);
+				getContext(), queueLenBtn, queueLen);
+		queueLenBtn.setOnClickListener(listenerQueueLength);
+		queueLenBtn.setOnLongClickListener(listenerQueueLength);
 
-		finish = new Button(context);
+		finishBtn = new Button(context);
 		//finish.setWidth(100);
-		finish.setText("00:13");
+		finishBtn.setText("00:13");
 		//linearLayout.addView(finish);
-		elements.add(finish);
-		finish.setOnClickListener(new ListenerFinishButton(context, db,
-				this,context));
+		elements.add(finishBtn);
+		finishBtn.setOnClickListener(new ListenerFinishButton(context, db,
+				this,context, finish));
+		
 		for(View view:elements)
 		{
 			if(view instanceof CheckBox==false)view.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
 			linearLayout.addView(view);
 		}
+		linearLayout.setVisibility(turnedOn?LinearLayout.VISIBLE:LinearLayout.INVISIBLE);
 		return linearLayout;
+	}
+
+	public void init() {
+		queueLen=0;
+		shoppingSize=0;
+		finish=0;
+		turnedOn=false;
+		id=0;
+		card=false;
 	}
 
 	public RowEntry(Context context, DBHelper db, MainActivity act, int counter) {
 		super(context);
 		this.context = context;
 
+		init();
 		setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT, 1.0f));
 		setGravity(Gravity.CENTER | Gravity.LEFT);
@@ -143,11 +154,18 @@ public class RowEntry extends LinearLayout {
 		tglbtn.setText(string);
 		tglbtn.setTextOff(string);
 		tglbtn.setTextOn(string);
+		//Toast.makeText(act, "cze", Toast.LENGTH_LONG).show();
+		ListenerToggleButton listenerToggleButton = new ListenerToggleButton(context, this);
+		tglbtn.setOnCheckedChangeListener(listenerToggleButton);
+		//listenerToggleButton.onCheckedChanged(tglbtn, true);
 		addView(tglbtn);
 		
-		addView(getOnLayout(counter, act, db));
-
 		
+		checkoutClerkLayout = getOnLayout(counter, act, db);
+		addView(checkoutClerkLayout);
+
+
+		listenerToggleButton.toggleTo(false);
 	}
 
 	public void reset() {
@@ -157,7 +175,7 @@ public class RowEntry extends LinearLayout {
 
 	public void updateLabel() {
 		if (getTime() == -1) {
-			finish.setText("start");
+			finishBtn.setText("start");
 		} else {
 			int newtime = (int) (Calendar.getInstance().getTime().getTime() / 1000)
 					- getTime();
@@ -171,8 +189,12 @@ public class RowEntry extends LinearLayout {
 			if(seconds<10)
 				stringBuilder.append('0');
 			stringBuilder.append(seconds);
-			finish.setText(stringBuilder.toString());
+			finishBtn.setText(stringBuilder.toString());
 		}
+	}
+
+	public void setTurnedOn(boolean isChecked) {
+		turnedOn=isChecked;
 	}
 	
 	

@@ -12,13 +12,15 @@ public class ListenerFinishButton implements OnClickListener {
 	Context context; 
 	DBHelper db;
 	RowEntry row;
-	private final Context act;
-	public ListenerFinishButton(Context context, DBHelper db, RowEntry row, Context act) {
+	Context act;
+	Integer finish;
+	public ListenerFinishButton(Context context, DBHelper db, RowEntry row, Context act, Integer finish) {
 		super();
 		this.context = context;
 		this.db = db;
 		this.row = row;
 		this.act = act;
+		this.finish = finish;
 		row.setTime(new Integer(-1));
 	}
 	
@@ -28,8 +30,8 @@ public class ListenerFinishButton implements OnClickListener {
 		String keys[]=row.getArrayOfKeys();
 		String data[]=row.getArrayOfData();
 		StringBuilder strbld=new StringBuilder();
-		if(row.tglbtn.isChecked()==false) {
-			Toast.makeText(context, "kasa "+row.tglbtn.getText().toString()+" wylaczona", Toast.LENGTH_LONG).show();
+		if(row.turnedOn==false) {
+			Toast.makeText(context, "kasa "+Integer.toString(row.id)+" wylaczona", Toast.LENGTH_LONG).show();
 			return;
 		}
 		for(int i=0; i<data.length; i++)
@@ -41,12 +43,13 @@ public class ListenerFinishButton implements OnClickListener {
 		}
 		if(row.getTime()==-1)
 		{
+			Toast.makeText(context, "ustawianie nowego czsau", Toast.LENGTH_LONG).show();
 			row.setTime((int) (Calendar.getInstance().getTime().getTime()/1000));		
 		}
 		else
 		{
 			//Toast.makeText(context, strbld.toString(), Toast.LENGTH_LONG).show();
-			Toast.makeText(context, "dodano do bazy info o kasie nr "+row.tglbtn.getText().toString(), Toast.LENGTH_LONG).show();
+			Toast.makeText(context, "dodano do bazy info o kasie nr "+Integer.toString(row.id), Toast.LENGTH_LONG).show();
 			Log.i("sql",strbld.toString());
 			new DataSenderThread(keys, data, db);
 			for(int i=0; i<data.length; i++)

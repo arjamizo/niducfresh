@@ -8,28 +8,33 @@ import android.widget.Toast;
 
 public class ListenerShoppingSize implements OnClickListener {
 	Context context;
-	Button shoppingSize;
+	Button shoppingSizeBtn;
 	static String sizes[] ={"S", "M", "L"};
+	private Integer shoppingSize;
 
-	public ListenerShoppingSize(Context context, Button shoppingSize) {
+	public ListenerShoppingSize(Context context, Button shoppingSizeBtn, Integer shoppingSize) {
 		super();
 		this.context = context;
+		this.shoppingSizeBtn = shoppingSizeBtn;
 		this.shoppingSize = shoppingSize;
-		shoppingSize.setTag(new Integer(0));
 		setLabel();
 	}
 
 	private void setLabel() {
-		Integer next=(Integer) shoppingSize.getTag()+1;
-		next%=3;
-		shoppingSize.setTag(next);
-		shoppingSize.setText(sizes[next]);
+		shoppingSizeBtn.setText(sizes[shoppingSize]);
+	}
+
+	public Integer increment() {
+		shoppingSize=(Integer) shoppingSize+1;
+		shoppingSize%=3;
+		setLabel();
+		return shoppingSize;
 	}
 
 	@Override
 	public void onClick(View v) {
-		setLabel();
-		Toast.makeText(context, shoppingSize.getText(), Toast.LENGTH_LONG).show();
+		increment();
+		Toast.makeText(context, shoppingSizeBtn.getText(), Toast.LENGTH_LONG).show();
 	}
 
 }

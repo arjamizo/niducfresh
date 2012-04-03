@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/send"
           android:title='wyslij na http://arzoxadi.tk/niduc/bazadanych.php' />
-    <item android:id="@+id/settings"
-          android:title='ustawienia' />
+    <item android:id="@+id/delete"
+          android:title='ustaw wszystkie jako usuniete' />
     <item android:id="@+id/about"
           android:title='o programie' />
 </menu>

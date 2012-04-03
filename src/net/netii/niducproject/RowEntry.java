@@ -148,7 +148,11 @@ public class RowEntry extends LinearLayout {
 		layout.setVisibility(turnedOn?LinearLayout.VISIBLE:LinearLayout.INVISIBLE);
 		return layout;
 	}
-
+	
+	/*
+	 * initializes variables so they are available for reading. 
+	 * if function is run after first run, boolean beginning should be set to true.    
+	 */
 	public void init(Integer counter, boolean beginning) {
 		//queueLen=0;
 		if(beginning)
@@ -158,7 +162,9 @@ public class RowEntry extends LinearLayout {
 		shoppingSize=0;
 		finish=0;
 		turnedOn=!beginning;
-		id=counter;
+		if(beginning)
+			id=counter;
+		//else leave id unchanged, may be changed by the user. 
 		card=false;
 
 	}

@@ -4,6 +4,8 @@
           android:title='wyslij na http://arzoxadi.tk/niduc/bazadanych.php' />
     <item android:id="@+id/delete"
           android:title='ustaw wszystkie jako usuniete' />
+    <item android:id="@+id/undelete"
+          android:title='ustaw wszystkie jako nowo dodane)' />
     <item android:id="@+id/about"
           android:title='o programie' />
 </menu>

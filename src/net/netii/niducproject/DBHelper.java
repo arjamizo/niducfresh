@@ -96,4 +96,28 @@ public class DBHelper extends SQLiteOpenHelper {
 		//new DataSenderThread(cashdeskId, cardPaid, size, date, time);
 		return query;
 	}
+	
+	public String undeleteAll() {
+		String query = String.format("UPDATE storage SET deleted=0 WHERE 1=1");
+		Log.i("sql", query);
+		try{
+			SQLiteDatabase base = getWritableDatabase();			
+			base.execSQL(query);
+		}catch(SQLiteException ex){
+			Log.i("sql", ex.getMessage());
+			return "Database error";
+		}           
+            
+		//new DataSenderThread(cashdeskId, cardPaid, size, date, time);
+		return query;
+	}
+
+	public int getNumberOfEntriesInDb() {
+		int count=0;
+		Cursor cursor = getReadableDatabase().rawQuery("select count(*) from `storage`", null);
+		cursor.moveToFirst();
+		count=cursor.getInt(0);
+		return count;
+	}
+	
 }

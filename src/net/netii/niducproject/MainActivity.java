@@ -52,10 +52,11 @@ public class MainActivity extends Activity {
 		int cnt=cursor.getColumnCount();
 		String columns="";
 		for(int i=0; i<cnt; ++i)
-			columns+=", "+cursor.getColumnName(i);
+		//	columns+=", "+cursor.getColumnName(i)
+			;
 		String dbInfo="db version: "+Integer.toString(dbHelp.getReadableDatabase().getVersion())+" nr of cols in table: "+cnt+": "+columns;
 		cursor.close();
-		label.setText(getResources().getString(R.string.header)+dbInfo);
+		label.setText(getResources().getString(R.string.header)+dbInfo+" nr of entries in db: "+dbHelp.getNumberOfEntriesInDb());
 		wrapper.addView(label);
 
 		ScrollView scrollView = new ScrollView(this);
@@ -118,6 +119,9 @@ public class MainActivity extends Activity {
 			break;
 		case R.id.delete:
 			dbHelp.setDeletedAll();
+			break;
+		case R.id.undelete:
+			dbHelp.undeleteAll();
 			break;
 		}
 		return super.onOptionsItemSelected(item);

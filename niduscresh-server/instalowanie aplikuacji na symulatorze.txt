@@ -1,0 +1,48 @@
+•sciaganie na komputer z emulatora
+cmd /k p:\android\android-sdk-windows\platform-tools\adb.exe pull /data/app/pl.pwr.apk c:\niduc.apk
+
+•wysylanie na emulator
+cmd /k p:\android\android-sdk-windows\platform-tools\adb.exe push c:\niduc.apk /data/app/pl.pwr.apk
+
+•skad sciagnac Ÿródlo? 
+instalujemy gita
+http://help.github.com/win-set-up-git/
+
+•projekt dostepny jest na 
+https://github.com/test30/NiducPBTKPRAZ
+
+•zatem zeby skopiwac zrodlo projektu 
+wystarczy podazac za instrukcjami 
+http://help.github.com/fork-a-repo/
+prawym na tlo foleru zalozonego specjalnie dla tego projektu
+git clone git@github.com:test30/NiducPBTKPRAZ.git
+
+
+==============================================
+STRONA PROEJKTU ZRODLA https://github.com/test30/NiducPBTKPRAZ
+
+cytat z Global setup:
+ Set up git
+  git config --global user.name "Your Name"
+  git config --global user.email youremail
+      
+Next steps:
+  mkdir NiducPBTKPRAZ
+  cd NiducPBTKPRAZ
+  git init
+  touch README
+  git add README
+  git commit -m 'first commit'
+  git remote add origin git@github.com:test30/NiducPBTKPRAZ.git
+  git push -u origin master
+      
+Existing Git Repo?
+  cd existing_git_repo
+  git remote add origin git@github.com:test30/NiducPBTKPRAZ.git
+  git push -u origin master
+      
+Importing a Subversion Repo?
+  Click here
+      
+When you're done:
+  Continue
